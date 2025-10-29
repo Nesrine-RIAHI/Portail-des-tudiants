@@ -199,7 +199,6 @@
     </form>
 
     <script>
-       
     // Récup user de localStorage (après login)
     function getUser() {
         return JSON.parse(localStorage.getItem('user')) || null;
@@ -225,98 +224,71 @@
             document.getElementById('addNewsBtn').style.display = 'block';
         }
 
-        loadActualites();  // Appel à la nouvelle fonction
+        loadActualites();  // Chargement sans fetch
     });
 
-    // Nouvelle fonction : loadActualites (remplace loadNews)
-    async function loadActualites() {
-        try {
-            const response = await fetch('http://localhost:3000/api/actualites');  // Adapte l'URL à ton backend (ex. Render : https://ton-app.onrender.com/api/actualites)
-            const data = await response.json();  // Suppose que ton API renvoie { stories: [...], research: [...], events: [...] }
+    // Fonction statique : loadActualites avec mock data (pas de fetch !)
+    function loadActualites() {
+        // Mock data réaliste pour FSM (ajoute tes vraies infos ici)
+        const mockData = {
+            stories: [
+                { titre: 'Étudiant FSM remporte prix IA', type: 'success', description: 'Projet de reconnaissance faciale primé au hackathon national. Bravo !', lien: 'https://fsm.rnu.tn/ia-projet' },
+                { titre: 'Bourses d\'excellence 2025', type: 'success', description: '15 étudiants sélectionnés pour stages internationaux.', lien: '' },
+                { titre: 'Alumni chez IBM Tunisie', type: 'success', description: 'Recrutement direct pour 5 diplômés en info.', lien: 'https://ibm.com/tunisie' }
+            ],
+            research: [
+                { titre: 'Nouveau labo bio-informatique', type: 'research', description: 'Équipé pour analyses génomiques, ouvert aux étudiants.', lien: '#' },
+                { titre: 'Article publié dans Science', type: 'research', description: 'Recherche FSM sur énergies renouvelables.', lien: 'https://science.org' },
+                { titre: 'Partenariat avec CNRS France', type: 'research', description: 'Échanges chercheurs prévus en décembre.', lien: '#' }
+            ],
+            events: [
+                { titre: 'Journée orientation nouveaux étudiants', type: 'evenement', description: 'Le 5 novembre, salle amphithéâtre principal.', lien: 'https://fsm.rnu.tn/orientation' },
+                { titre: 'Workshop Python pour débutants', type: 'evenement', description: 'Gratuit, 20 places, inscrivez-vous vite !', lien: '#' },
+                { titre: 'Festival sciences FSM', type: 'evenement', description: 'Stands et conférences du 10 au 12 nov.', lien: 'https://fsm.rnu.tn/festival' }
+            ]
+        };
 
-            // Success Stories
-            const stories = data.stories ? data.stories.slice(0, 3) : [];  // Limite à 3
-            document.getElementById('stories-list').innerHTML = stories.map(item => `
-                <div class="news-card">
-                    <h3>${item.titre}</h3>
-                    <p class="type">Type: ${item.type}</p>
-                    <p>${item.description}</p>
-                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                </div>
-            `).join('') || '<p>Aucune success story disponible.</p>';
+        // Success Stories
+        const stories = mockData.stories;
+        document.getElementById('stories-list').innerHTML = stories.map(item => `
+            <div class="news-card">
+                <h3>${item.titre}</h3>
+                <p class="type">Type: ${item.type}</p>
+                <p>${item.description}</p>
+                ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+            </div>
+        `).join('');
 
-            // Recherche & Innovation
-            const research = data.research ? data.research.slice(0, 3) : [];
-            document.getElementById('research-list').innerHTML = research.map(item => `
-                <div class="news-card">
-                    <h3>${item.titre}</h3>
-                    <p class="type">Type: ${item.type}</p>
-                    <p>${item.description}</p>
-                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                </div>
-            `).join('') || '<p>Aucune innovation disponible.</p>';
+        // Recherche & Innovation
+        const research = mockData.research;
+        document.getElementById('research-list').innerHTML = research.map(item => `
+            <div class="news-card">
+                <h3>${item.titre}</h3>
+                <p class="type">Type: ${item.type}</p>
+                <p>${item.description}</p>
+                ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+            </div>
+        `).join('');
 
-            // Événements
-            const events = data.events ? data.events.slice(0, 3) : [];
-            document.getElementById('events-list').innerHTML = events.map(item => `
-                <div class="news-card">
-                    <h3>${item.titre}</h3>
-                    <p class="type">Type: ${item.type}</p>
-                    <p>${item.description}</p>
-                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                </div>
-            `).join('') || '<p>Aucun événement disponible.</p>';
-
-        } catch (err) {
-            console.error('Erreur fetch actualités:', err);
-            // Fallback mock statique (pour tester sans backend)
-            const mockStories = [
-                { titre: 'Étudiant primé en IA', type: 'success', description: 'Prix national pour son projet ML.', lien: '#' }
-            ];
-            const mockResearch = [
-                { titre: 'Nouveau labo quantique', type: 'research', description: 'Ouverture en novembre.', lien: '#' }
-            ];
-            const mockEvents = [
-                { titre: 'Conférence FSM', type: 'evenement', description: 'Le 15 nov. à 14h.', lien: '#' }
-            ];
-
-            // Applique les mocks
-            document.getElementById('stories-list').innerHTML = mockStories.map(item => `
-                <div class="news-card">
-                    <h3>${item.titre}</h3>
-                    <p class="type">Type: ${item.type}</p>
-                    <p>${item.description}</p>
-                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                </div>
-            `).join('');
-
-            document.getElementById('research-list').innerHTML = mockResearch.map(item => `
-                <div class="news-card">
-                    <h3>${item.titre}</h3>
-                    <p class="type">Type: ${item.type}</p>
-                    <p>${item.description}</p>
-                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                </div>
-            `).join('');
-
-            document.getElementById('events-list').innerHTML = mockEvents.map(item => `
-                <div class="news-card">
-                    <h3>${item.titre}</h3>
-                    <p class="type">Type: ${item.type}</p>
-                    <p>${item.description}</p>
-                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                </div>
-            `).join('');
-        }
+        // Événements
+        const events = mockData.events;
+        document.getElementById('events-list').innerHTML = events.map(item => `
+            <div class="news-card">
+                <h3>${item.titre}</h3>
+                <p class="type">Type: ${item.type}</p>
+                <p>${item.description}</p>
+                ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+            </div>
+        `).join('');
     }
 
     // Toggle form ajout (pour enseignants)
     function toggleForm() {
-        const form = document.getElementById('newsForm');  // Correction : c'était 'addNewsForm' avant, mais c'est 'newsForm'
+        const form = document.getElementById('newsForm');
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Submit form ajout (exemple statique ; étendre avec POST /api/actualites si besoin)
+    // Submit form ajout (simulation statique)
     document.getElementById('newsForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const role = getUserRole();
@@ -329,15 +301,14 @@
             lien: document.getElementById('lien').value
         };
 
-        // Pour l'instant, alerte + refresh (ajoute POST backend plus tard)
-        alert('Actualité ajoutée ! (Simulation)');
-        loadActualites();  // Refresh avec la nouvelle fonction
+        alert(`Actualité "${data.titre}" ajoutée ! (Simulation – ajoute au mock si besoin)`);
+        loadActualites();  // Refresh
         toggleForm();
         e.target.reset();
     });
-
-    </script>
+</script>
 </body>
 
 </html>
+
 
