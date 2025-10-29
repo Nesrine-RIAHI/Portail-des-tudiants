@@ -199,107 +199,144 @@
     </form>
 
     <script>
-        // Récup user de localStorage (après login)
-        function getUser() {
-            return JSON.parse(localStorage.getItem('user')) || null;
+       <script>
+    // Récup user de localStorage (après login)
+    function getUser() {
+        return JSON.parse(localStorage.getItem('user')) || null;
+    }
+
+    function getUserRole() {
+        const user = getUser();
+        return user ? user.role : null;
+    }
+
+    // Affichage nom user
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = getUser();
+        if (user) {
+            document.getElementById('userName').textContent = user.firstname;
+        } else {
+            // Si pas connecté, redirige vers login
+            window.location.href = "index.html";
         }
 
-        function getUserRole() {
-            const user = getUser();
-            return user ? user.role : null;
+        const role = getUserRole();
+        if (role === 'enseignant') {
+            document.getElementById('addNewsBtn').style.display = 'block';
         }
 
-        // Affichage nom user
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = getUser();
-            if (user) {
-                document.getElementById('userName').textContent = user.firstname;
-            } else {
-                // Si pas connecté, redirige vers login
-                window.location.href = "index.html";
-            }
+        loadActualites();  // Appel à la nouvelle fonction
+    });
 
-            const role = getUserRole();
-            if (role === 'enseignant') {
-                document.getElementById('addNewsBtn').style.display = 'block';
-            }
+    // Nouvelle fonction : loadActualites (remplace loadNews)
+    async function loadActualites() {
+        try {
+            const response = await fetch('http://localhost:3000/api/actualites');  // Adapte l'URL à ton backend (ex. Render : https://ton-app.onrender.com/api/actualites)
+            const data = await response.json();  // Suppose que ton API renvoie { stories: [...], research: [...], events: [...] }
 
-            loadNews();
-        });
+            // Success Stories
+            const stories = data.stories ? data.stories.slice(0, 3) : [];  // Limite à 3
+            document.getElementById('stories-list').innerHTML = stories.map(item => `
+                <div class="news-card">
+                    <h3>${item.titre}</h3>
+                    <p class="type">Type: ${item.type}</p>
+                    <p>${item.description}</p>
+                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                </div>
+            `).join('') || '<p>Aucune success story disponible.</p>';
 
-        // Fetch et population automatique
-        async function loadNews() {
-            try {
-                const response = await fetch('http://localhost:3001/news');
-                const data = await response.json();
+            // Recherche & Innovation
+            const research = data.research ? data.research.slice(0, 3) : [];
+            document.getElementById('research-list').innerHTML = research.map(item => `
+                <div class="news-card">
+                    <h3>${item.titre}</h3>
+                    <p class="type">Type: ${item.type}</p>
+                    <p>${item.description}</p>
+                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                </div>
+            `).join('') || '<p>Aucune innovation disponible.</p>';
 
-                // Success Stories
-                const stories = data.stories.slice(0, 3); // Limite à 3
-                document.getElementById('stories-list').innerHTML = stories.map(item => `
-                    <div class="news-card">
-                        <h3>${item.titre}</h3>
-                        <p class="type">Type: ${item.type}</p>
-                        <p>${item.description}</p>
-                        ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                    </div>
-                `).join('');
+            // Événements
+            const events = data.events ? data.events.slice(0, 3) : [];
+            document.getElementById('events-list').innerHTML = events.map(item => `
+                <div class="news-card">
+                    <h3>${item.titre}</h3>
+                    <p class="type">Type: ${item.type}</p>
+                    <p>${item.description}</p>
+                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                </div>
+            `).join('') || '<p>Aucun événement disponible.</p>';
 
-                // Recherche & Innovation
-                const research = data.research.slice(0, 3);
-                document.getElementById('research-list').innerHTML = research.map(item => `
-                    <div class="news-card">
-                        <h3>${item.titre}</h3>
-                        <p class="type">Type: ${item.type}</p>
-                        <p>${item.description}</p>
-                        ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                    </div>
-                `).join('');
+        } catch (err) {
+            console.error('Erreur fetch actualités:', err);
+            // Fallback mock statique (pour tester sans backend)
+            const mockStories = [
+                { titre: 'Étudiant primé en IA', type: 'success', description: 'Prix national pour son projet ML.', lien: '#' }
+            ];
+            const mockResearch = [
+                { titre: 'Nouveau labo quantique', type: 'research', description: 'Ouverture en novembre.', lien: '#' }
+            ];
+            const mockEvents = [
+                { titre: 'Conférence FSM', type: 'evenement', description: 'Le 15 nov. à 14h.', lien: '#' }
+            ];
 
-                // Événements
-                const events = data.events.slice(0, 3);
-                document.getElementById('events-list').innerHTML = events.map(item => `
-                    <div class="news-card">
-                        <h3>${item.titre}</h3>
-                        <p class="type">Type: ${item.type}</p>
-                        <p>${item.description}</p>
-                        ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
-                    </div>
-                `).join('');
+            // Applique les mocks
+            document.getElementById('stories-list').innerHTML = mockStories.map(item => `
+                <div class="news-card">
+                    <h3>${item.titre}</h3>
+                    <p class="type">Type: ${item.type}</p>
+                    <p>${item.description}</p>
+                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                </div>
+            `).join('');
 
-            } catch (err) {
-                console.error('Erreur fetch news:', err);
-                // Fallback statique
-                document.getElementById('stories-list').innerHTML = '<p>Données temporaires indisponibles. Vérifiez la connexion au backend.</p>';
-                document.getElementById('research-list').innerHTML = '<p>Données temporaires indisponibles.</p>';
-                document.getElementById('events-list').innerHTML = '<p>Données temporaires indisponibles.</p>';
-            }
+            document.getElementById('research-list').innerHTML = mockResearch.map(item => `
+                <div class="news-card">
+                    <h3>${item.titre}</h3>
+                    <p class="type">Type: ${item.type}</p>
+                    <p>${item.description}</p>
+                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                </div>
+            `).join('');
+
+            document.getElementById('events-list').innerHTML = mockEvents.map(item => `
+                <div class="news-card">
+                    <h3>${item.titre}</h3>
+                    <p class="type">Type: ${item.type}</p>
+                    <p>${item.description}</p>
+                    ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                </div>
+            `).join('');
         }
+    }
 
-        // Toggle form ajout (pour enseignants)
-        function toggleForm() {
-            const form = document.getElementById('addNewsForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
+    // Toggle form ajout (pour enseignants)
+    function toggleForm() {
+        const form = document.getElementById('newsForm');  // Correction : c'était 'addNewsForm' avant, mais c'est 'newsForm'
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
 
-        // Submit form ajout (exemple statique ; étendre avec POST /news si besoin)
-        document.getElementById('newsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const role = getUserRole();
-            if (role !== 'enseignant') return alert('Accès refusé');
+    // Submit form ajout (exemple statique ; étendre avec POST /api/actualites si besoin)
+    document.getElementById('newsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const role = getUserRole();
+        if (role !== 'enseignant') return alert('Accès refusé');
 
-            const data = {
-                titre: document.getElementById('titre').value,
-                type: document.getElementById('type').value,
-                description: document.getElementById('description').value,
-                lien: document.getElementById('lien').value
-            };
+        const data = {
+            titre: document.getElementById('titre').value,
+            type: document.getElementById('type').value,
+            description: document.getElementById('description').value,
+            lien: document.getElementById('lien').value
+        };
 
-            // Pour l'instant, alerte + refresh (ajoute POST backend plus tard)
-            alert('Actualité ajoutée ! (Simulation)');
-            loadNews();  // Refresh
-            toggleForm();
-            e.target.reset();
-        });
+        // Pour l'instant, alerte + refresh (ajoute POST backend plus tard)
+        alert('Actualité ajoutée ! (Simulation)');
+        loadActualites();  // Refresh avec la nouvelle fonction
+        toggleForm();
+        e.target.reset();
+    });
+</script>
     </script>
 </body>
+
 </html>
