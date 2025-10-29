@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSM - Guide des Salles</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0A2463;
+            --secondary-blue: #3E92CC;
+            --light-blue: #D6EAF8;
+            --dark-gray: #333;
+            --light-gray: #f5f5f5;
+            --accent-green: #27AE60;
+            --accent-red: #E74C3C;
+            --shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: var(--dark-gray);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Barre de navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: linear-gradient(135deg, #4a78a6 0%, #2c5a8d 100%);
+            padding: 20px;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .navbar a {
+            color: #fffbfc;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: var(--transition);
+        }
+        
+        .navbar a:hover {
+            background-color: #bbcefb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(187, 206, 251, 0.4);
+        }
+
+        /* En-tête */
+        header {
+            background: linear-gradient(rgba(10, 36, 99, 0.9), rgba(10, 36, 99, 0.9)), 
+                        url('background_salles.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: slideInDown 1s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            animation: slideInUp 1s ease-out 0.2s both;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Contenu principal */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Section recherche */
+        .search-section {
+            background: linear-gradient(135deg, var(--light-blue) 0%, #b3d9ff 100%);
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .search-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .search-section h2 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            animation: slideInUp 0.8s ease-out 0.3s both;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem;
+            border: 2px solid var(--secondary-blue);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 20px rgba(62, 146, 204, 0.2);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(10, 36, 99, 0.4);
+        }
+
+        /* Filtres */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: slideInUp 0.8s ease-out 0.5s both;
+        }
+
+        .filter-btn {
+            background-color: white;
+            border: 2px solid var(--secondary-blue);
+            color: var(--primary-blue);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--secondary-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(10, 36, 99, 0.2);
+        }
+
+        /* Carte */
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--secondary-blue);
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Résultats */
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .room-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        .room-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .room-card.animate {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+
+        .room-card:nth-child(1) { animation-delay: 0.1s; }
+        .room-card:nth-child(2) { animation-delay: 0.2s; }
+        .room-card:nth-child(3) { animation-delay: 0.3s; }
+        .room-card:nth-child(4) { animation-delay: 0.4s; }
+        .room-card:nth-child(5) { animation-delay: 0.5s; }
+        .room-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .room-image {
+            height: 200px;
+            background-color: var(--light-gray);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .room-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.1));
+        }
+
+        .room-info {
+            padding: 1.5rem;
+        }
+
+        .room-title {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .room-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .room-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .room-meta i {
+            color: var(--secondary-blue);
+            transition: var(--transition);
+        }
+
+        .room-card:hover .room-meta i {
+            color: var(--primary-blue);
+            transform: scale(1.2);
+        }
+
+        .room-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .status-available {
+            background: linear-gradient(135deg, #E1F5E1 0%, #C8E6C9 100%);
+            color: #2E7D32;
+        }
+
+        .status-occupied {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            color: #C62828;
+        }
+
+        .room-card:hover .room-status {
+            transform: scale(1.05);
+        }
+
+        /* Pied de page */
+        footer {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1a365d 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .footer-column li:hover {
+            transform: translateX(10px);
+        }
+
+        .footer-column a {
+            color: var(--light-blue);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-column a:hover {
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px) scale(1.2);
+            color: var(--secondary-blue);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(62, 146, 204, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 3rem 1rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            #map {
+                height: 350px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                padding: 1rem;
+            }
+
+            .filters {
+                justify-content: flex-start;
+            }
+
+            .room-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="Actualite.html">Actualité</a>
+        <a href="NouveauEtudiant.html">Nouveaux Etudiants</a>
+        <a href="Transoprt.html">Transports</a>
+        <a href="EspaceInteractif.html">Espace Interactif</a>
+        <a href="GuideSalles.html">Guide salles</a>
+    </div>
+
+    <header>
+        <h1><i class="fas fa-map-marked-alt"></i> Guide des Salles de la FSM</h1>
+        <p>Trouvez facilement toutes les salles de cours, amphithéâtres et laboratoires du campus</p>
+    </header>
+
+    <div class="container">
+        <section class="search-section">
+            <h2><i class="fas fa-search"></i> Trouver une salle</h2>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Rechercher par numéro, bâtiment ou type...">
+                <button class="search-btn"><i class="fas fa-search"></i> Rechercher</button>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all"><i class="fas fa-th"></i> Toutes</button>
+                <button class="filter-btn" data-filter="amphi"><i class="fas fa-theater-masks"></i> Amphithéâtres</button>
+                <button class="filter-btn" data-filter="salle"><i class="fas fa-chalkboard-teacher"></i> Salles de cours</button>
+                <button class="filter-btn" data-filter="labo"><i class="fas fa-flask"></i> Laboratoires</button>
+                <button class="filter-btn" data-filter="bureau"><i class="fas fa-briefcase"></i> Bureaux</button>
+            </div>
+        </section>
+
+        <section>
+            <h2><i class="fas fa-map"></i> Carte interactive du campus</h2>
+            <div id="map"></div>
+        </section>
+
+        <section>
+            <h2><i class="fas fa-door-open"></i> Salles disponibles</h2>
+            <div class="results-container" id="results">
+                <!-- Les cartes de salles seront générées ici par JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3><i class="fas fa-university"></i> Faculté des Sciences de Monastir</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-sitemap"></i> Plan du site</a></li>
+                    <li><a href="#"><i class="fas fa-gavel"></i> Mentions légales</a></li>
+                    <li><a href="#"><i class="fas fa-universal-access"></i> Accessibilité</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3><i class="fas fa-address-book"></i> Contact</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +216 73 500 500</li>
+                    <li><i class="fas fa-envelope"></i> contact@fsm.rnu.tn</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Rue de l'Environnement, 5000 Monastir</li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3><i class="fas fa-share-alt"></i> Réseaux sociaux</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 Faculté des Sciences de Monastir. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Données des salles (simulées)
+        const roomsData = [
+            {
+                id: 1,
+                name: "Amphithéâtre A1",
+                building: "Bâtiment Principal",
+                floor: "RDC",
+                capacity: 250,
+                type: "amphi",
+                status: "available",
+                coordinates: [35.7785, 10.8262],
+                image: "amphi.jpg",
+                equipment: ["Projecteur", "Micro", "Tableau blanc"]
+            },
+            {
+                id: 2,
+                name: "Salle 101",
+                building: "Bâtiment Informatique",
+                floor: "1er étage",
+                capacity: 40,
+                type: "salle",
+                status: "occupied",
+                coordinates: [35.7780, 10.8255],
+                image: "salle_cours.jpg",
+                equipment: ["Projecteur", "Ordinateurs"]
+            },
+            {
+                id: 3,
+                name: "Labo de Chimie B2",
+                building: "Bâtiment Chimie",
+                floor: "Sous-sol",
+                capacity: 20,
+                type: "labo",
+                status: "available",
+                coordinates: [35.7778, 10.8265],
+                image: "labo_chimie.jpg",
+                equipment: ["Hottes", "Matériel de chimie"]
+            },
+            {
+                id: 4,
+                name: "Amphithéâtre B3",
+                building: "Bâtiment Principal",
+                floor: "1er étage",
+                capacity: 180,
+                type: "amphi",
+                status: "available",
+                coordinates: [35.7783, 10.8260],
+                image: "amphi.jpg",
+                equipment: ["Projecteur", "Micro", "Tableau interactif"]
+            },
+            {
+                id: 5,
+                name: "Salle 205",
+                building: "Bâtiment Mathématiques",
+                floor: "2ème étage",
+                capacity: 35,
+                type: "salle",
+                status: "available",
+                coordinates: [35.7788, 10.8250],
+                image: "salle_cours.jpg",
+                equipment: ["Tableau blanc"]
+            },
+            {
+                id: 6,
+                name: "Bureau 12",
+                building: "Bâtiment Administratif",
+                floor: "RDC",
+                capacity: 4,
+                type: "bureau",
+                status: "occupied",
+                coordinates: [35.7780, 10.8270],
+                image: "bureau.jpg",
+                equipment: ["Ordinateur", "Téléphone"]
+            }
+        ];
+
+        // Initialisation de la carte
+        const map = L.map('map').setView([35.7785, 10.8262], 17);
+
+        // Ajout du fond de carte
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Icônes personnalisées
+        const amphiIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+        });
+
+        const salleIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+        });
+
+        const laboIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+        });
+
+        const bureauIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+        });
+
+        // Ajout des marqueurs pour chaque salle
+        const markers = [];
+        roomsData.forEach(room => {
+            let icon;
+            switch(room.type) {
+                case 'amphi': icon = amphiIcon; break;
+                case 'salle': icon = salleIcon; break;
+                case 'labo': icon = laboIcon; break;
+                case 'bureau': icon = bureauIcon; break;
+                default: icon = salleIcon;
+            }
+
+            const marker = L.marker(room.coordinates, { icon: icon })
+                .bindPopup(`<b>${room.name}</b><br>${room.building} - ${room.floor}`)
+                .addTo(map);
+            
+            marker.roomId = room.id;
+            markers.push(marker);
+        });
+
+        // Affichage des salles dans la section résultats
+        function displayRooms(rooms) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            rooms.forEach((room, index) => {
+                const roomCard = document.createElement('div');
+                roomCard.className = 'room-card';
+                roomCard.dataset.id = room.id;
+                roomCard.dataset.type = room.type;
+                roomCard.style.animationDelay = `${index * 0.1}s`;
+
+                roomCard.innerHTML = `
+                    <div class="room-image" style="background-image: url('${room.image}')"></div>
+                    <div class="room-info">
+                        <h3 class="room-title"><i class="fas fa-door-open"></i> ${room.name}</h3>
+                        <div class="room-meta">
+                            <span><i class="fas fa-building"></i> ${room.building}</span>
+                            <span><i class="fas fa-layer-group"></i> ${room.floor}</span>
+                            <span><i class="fas fa-users"></i> ${room.capacity} places</span>
+                        </div>
+                        <div class="room-status ${room.status === 'available' ? 'status-available' : 'status-occupied'}">
+                            <i class="fas ${room.status === 'available' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                            ${room.status === 'available' ? 'Disponible' : 'Occupé'}
+                        </div>
+                    </div>
+                `;
+
+                resultsContainer.appendChild(roomCard);
+
+                // Ajout d'un événement pour centrer la carte sur la salle
+                roomCard.addEventListener('click', () => {
+                    const roomMarker = markers.find(m => m.roomId === room.id);
+                    if (roomMarker) {
+                        map.setView(roomMarker.getLatLng(), 18);
+                        roomMarker.openPopup();
+                    }
+                });
+
+                // Trigger animation
+                setTimeout(() => roomCard.classList.add('animate'), 100);
+            });
+        }
+
+        // Filtrage des salles
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Mise à jour des boutons actifs
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filtrage
+                const filter = this.dataset.filter;
+                const filteredRooms = filter === 'all' 
+                    ? roomsData 
+                    : roomsData.filter(room => room.type === filter);
+
+                displayRooms(filteredRooms);
+            });
+        });
+
+        // Recherche
+        document.querySelector('.search-btn').addEventListener('click', searchRooms);
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchRooms();
+        });
+
+        function searchRooms() {
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+
+            let filteredRooms = roomsData.filter(room => 
+                room.name.toLowerCase().includes(searchTerm) ||
+                room.building.toLowerCase().includes(searchTerm) ||
+                room.type.includes(searchTerm)
+            );
+
+            if (activeFilter !== 'all') {
+                filteredRooms = filteredRooms.filter(room => room.type === activeFilter);
+            }
+
+            displayRooms(filteredRooms);
+        }
+
+        // Afficher toutes les salles au chargement
+        displayRooms(roomsData);
+    </script>
+</body>
+</html>

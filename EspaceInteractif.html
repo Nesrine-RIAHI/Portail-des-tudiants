@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Interactif Éducatif</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --gradient-blue: linear-gradient(135deg, #1a73e8 0%, #0d47a2 100%);
+            --accent-color: #34a853;
+            --secondary-color: #fbbc05;
+            --alert-color: #ea4335;
+            --shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #202124;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: var(--gradient-blue);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin: 0;
+            animation: slideInDown 1s ease-out;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+        
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .card:hover .card-header::after {
+            left: 100%;
+        }
+        
+        .forum .card-header {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+        }
+        
+        .qa .card-header {
+            background: linear-gradient(135deg, #ea4335 0%, #fbbc05 100%);
+        }
+        
+        .calendar .card-header {
+            background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .feature:hover {
+            background: var(--light-blue);
+        }
+        
+        .feature-icon {
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            transition: transform 0.3s;
+        }
+        
+        .feature:hover .feature-icon {
+            transform: scale(1.1);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            background: var(--gradient-blue);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 115, 232, 0.3);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--light-blue);
+            margin-top: 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            background: var(--secondary-color);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .upcoming-events {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .event-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+        }
+        
+        .event-item:hover {
+            padding-left: 0.5rem;
+        }
+        
+        .event-date {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+        
+        .search-bar {
+            padding: 1rem;
+            background: white;
+            box-shadow: var(--shadow);
+            margin: 2rem auto;
+            max-width: 600px;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+        
+        .search-bar:hover {
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: transparent;
+        }
+        
+        .search-input:focus {
+            outline: none;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #4a78a6;
+            padding: 20px;
+            font-size: 18px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+        .navbar a {
+            color: #fffbfc;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: var(--transition);
+        }
+        .navbar a:hover {
+            background-color: #bbcefb;
+            transform: scale(1.05);
+        }
+        
+        /* Sections Cachées */
+        .hidden-section {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 900px;
+            box-shadow: var(--shadow);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .hidden-section.active {
+            display: block;
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            margin-bottom: 1rem;
+            border-radius: 50px;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateX(-5px);
+        }
+        
+        /* Forum Styles */
+        .forum-post-form {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--light-blue);
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        
+        .forum-post-form:hover {
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .forum-post-form input, .forum-post-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        .forum-post-form input:focus, .forum-post-form textarea:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+        }
+        
+        .forum-posts {
+            list-style: none;
+        }
+        
+        .forum-post {
+            border: 1px solid #eee;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .forum-post:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .post-actions button {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .pin-btn {
+            background: #ffc107;
+            color: white;
+        }
+        
+        .pin-btn.pinned {
+            background: #ff9800;
+            transform: rotate(10deg);
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .post-actions button:hover {
+            transform: scale(1.1);
+        }
+        
+        .replies {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--accent-color);
+            background: var(--light-blue);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .reply-form {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .reply-form input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+        
+        .reply-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        /* Q&A Styles */
+        .qa-session-form {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--light-blue);
+            border-radius: 12px;
+        }
+        
+        .qa-session-form input, .qa-session-form select, .qa-session-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        .qa-session-form input:focus, .qa-session-form textarea:focus {
+            border-color: var(--accent-color);
+        }
+        
+        .qa-sessions {
+            list-style: none;
+        }
+        
+        .qa-session {
+            border: 1px solid #eee;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qa-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--accent-color);
+        }
+        
+        .qa-session:hover {
+            transform: scale(1.02);
+        }
+        
+        .session-date {
+            font-weight: bold;
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+        }
+        
+        /* Live Session Styles */
+        .live-session {
+            background: linear-gradient(135deg, #34a853 0%, #2e7d32 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 2rem 0;
+            box-shadow: 0 8px 30px rgba(52, 168, 83, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .live-chat {
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .chat-message {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: var(--light-blue);
+        }
+        
+        .chat-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .chat-form input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+        
+        .chat-send {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        /* Calendrier Styles */
+        .calendar-container {
+            margin: 2rem 0;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .calendar-nav button {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .calendar-nav button:hover {
+            transform: scale(1.1);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            text-align: center;
+        }
+        
+        .calendar-day {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            min-height: 80px;
+            position: relative;
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .calendar-day:hover {
+            background: var(--light-blue);
+            transform: scale(1.05);
+        }
+        
+        .calendar-day.other-month {
+            color: #ccc;
+            background: transparent;
+        }
+        
+        .calendar-event {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.3rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+            display: inline-block;
+            animation: bounceIn 0.5s ease;
+        }
+        
+        .add-event-form {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: var(--light-blue);
+            border-radius: 12px;
+        }
+        
+        .add-event-form input, .add-event-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        /* Animations */
+        @keyframes slideInDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .calendar-grid {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="Actualite.html">Actualité</a>
+        <a href="NouveauxEtudiants.html">Nouveaux Étudiants</a>
+        <a href="Transoprt.html">Transports</a>
+        <a href="EspaceInteractif.html">Espace Interactif</a>
+        <a href="GuidesSalles.html">Guide salles</a>
+    </div>
+    
+    <div class="header">
+        <h1>Espace Interactif Éducatif</h1>
+        <p>Connectez-vous, collaborez et apprenez ensemble</p>
+    </div>
+    
+    <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Rechercher des discussions, événements ou experts...">
+    </div>
+    
+    <div class="container">
+        <div class="card forum">
+            <div class="card-header">
+                <h2><i class="fas fa-comments"></i> Forum de discussion</h2>
+            </div>
+            <div class="card-body">
+                <div class="feature">
+                    <i class="fas fa-bullhorn feature-icon"></i>
+                    <div>
+                        <h3>Publier des questions</h3>
+                        <p>Partagez vos questions ou sujets de discussion avec la communauté.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-reply feature-icon"></i>
+                    <div>
+                        <h3>Répondre aux messages</h3>
+                        <p>Interagissez avec les autres utilisateurs en répondant à leurs publications.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-thumbtack feature-icon"></i>
+                    <div>
+                        <h3>Discussions épinglées</h3>
+                        <p>Accédez facilement aux discussions importantes marquées par les modérateurs.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <div>
+                        <h3>Modération</h3>
+                        <p>Un système de modération maintient la qualité des discussions.</p>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="openForum()"><i class="fas fa-arrow-right"></i> Accéder au forum</button>
+            </div>
+        </div>
+        
+        <div class="card qa">
+            <div class="card-header">
+                <h2><i class="fas fa-microphone-alt"></i> Séances de Q&A en direct</h2>
+            </div>
+            <div class="card-body">
+                <div class="feature">
+                    <i class="fas fa-user-tie feature-icon"></i>
+                    <div>
+                        <h3>Sessions avec experts</h3>
+                        <p>Des séances planifiées avec des professionnels et enseignants.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-video feature-icon"></i>
+                    <div>
+                        <h3>Diffusion multimédia</h3>
+                        <p>Participation via audio ou chat textuel (sans caméra).</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-question feature-icon"></i>
+                    <div>
+                        <h3>Questions en direct</h3>
+                        <p>Obtenez des réponses immédiates à vos questions pendant les sessions.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-calendar feature-icon"></i>
+                    <div>
+                        <h3>Intégration calendrier</h3>
+                        <p>Ajoutez les sessions qui vous intéressent à votre agenda personnel.</p>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="openQA()"><i class="fas fa-arrow-right"></i> Voir les prochaines sessions</button>
+            </div>
+        </div>
+        
+        <div class="card calendar">
+            <div class="card-header">
+                <h2><i class="fas fa-calendar-alt"></i> Calendrier des événements</h2>
+            </div>
+            <div class="card-body">
+                <div class="feature">
+                    <i class="fas fa-eye feature-icon"></i>
+                    <div>
+                        <h3>Événements à venir</h3>
+                        <p>Visualisez tous les webinaires et rencontres éducatives programmés.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-bell feature-icon"></i>
+                    <div>
+                        <h3>Notifications</h3>
+                        <p>Recevez des rappels pour ne manquer aucun événement important.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-ticket-alt feature-icon"></i>
+                    <div>
+                        <h3>Inscriptions</h3>
+                        <p>Réservez votre place aux événements qui vous intéressent.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <i class="fas fa-info-circle feature-icon"></i>
+                    <div>
+                        <h3>Détails complets</h3>
+                        <p>Accédez à toutes les informations sur chaque événement.</p>
+                    </div>
+                </div>
+                
+                <h4>Prochains événements :</h4>
+                <ul class="upcoming-events">
+                    <li class="event-item">
+                        <span class="event-date"><i class="fas fa-calendar-day"></i> 15/10</span> - Webinaire sur les méthodes d'apprentissage
+                    </li>
+                    <li class="event-item">
+                        <span class="event-date"><i class="fas fa-calendar-day"></i> 18/10</span> - Q&A avec un expert en pédagogie
+                    </li>
+                    <li class="event-item">
+                        <span class="event-date"><i class="fas fa-calendar-day"></i> 22/10</span> - Atelier pratique de travail collaboratif
+                    </li>
+                </ul>
+                
+                <button class="btn" onclick="openCalendar()"><i class="fas fa-arrow-right"></i> Voir le calendrier complet</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section Forum -->
+    <div id="forum-section" class="hidden-section">
+        <button class="btn back-btn" onclick="closeForum()"><i class="fas fa-arrow-left"></i> Retour</button>
+        <h2><i class="fas fa-comments"></i> Forum de Discussion</h2>
+        <form class="forum-post-form" onsubmit="addPost(event)">
+            <input type="text" id="post-title" placeholder="Titre de votre question" required>
+            <textarea id="post-content" placeholder="Posez votre question ici..." rows="4" required></textarea>
+            <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Publier</button>
+        </form>
+        <ul class="forum-posts" id="posts-list"></ul>
+    </div>
+    
+    <!-- Section Q&A -->
+    <div id="qa-section" class="hidden-section">
+        <button class="btn back-btn" onclick="closeQA()"><i class="fas fa-arrow-left"></i> Retour</button>
+        <h2><i class="fas fa-microphone-alt"></i> Séances Q&A en Direct</h2>
+        <h3><i class="fas fa-plus"></i> Créer une nouvelle session (Enseignants)</h3>
+        <form class="qa-session-form" onsubmit="createSession(event)">
+            <input type="text" id="session-title" placeholder="Titre de la session" required>
+            <input type="date" id="session-date" required>
+            <input type="time" id="session-time" required>
+            <textarea id="session-desc" placeholder="Description de la session (audio/chat uniquement, sans caméra)" rows="3"></textarea>
+            <button type="submit" class="btn"><i class="fas fa-broadcast-tower"></i> Planifier & Envoyer Emails</button>
+        </form>
+        <h3><i class="fas fa-list"></i> Sessions à venir</h3>
+        <ul class="qa-sessions" id="sessions-list"></ul>
+    </div>
+    
+    <!-- Section Calendrier -->
+    <div id="calendar-section" class="hidden-section">
+        <button class="btn back-btn" onclick="closeCalendar()"><i class="fas fa-arrow-left"></i> Retour</button>
+        <h2><i class="fas fa-calendar-alt"></i> Calendrier des Événements</h2>
+        <h3><i class="fas fa-plus"></i> Ajouter un événement (Enseignants)</h3>
+        <form class="add-event-form" onsubmit="addEvent(event)">
+            <input type="text" id="event-title" placeholder="Titre de l'événement" required>
+            <input type="date" id="event-date" required>
+            <textarea id="event-desc" placeholder="Description" rows="3"></textarea>
+            <button type="submit" class="btn"><i class="fas fa-plus-circle"></i> Ajouter</button>
+        </form>
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <h3 id="month-year"></h3>
+                <div class="calendar-nav">
+                    <button onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+                    <button onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Espace Interactif Éducatif | Tous droits réservés</p>
+        <p>Contact : support@espace-interactif.edu | Aide en ligne | Conditions d'utilisation</p>
+    </div>
+    
+    <script>
+        // Données simulées (remplace par MongoDB via fetch dans backend)
+        let posts = JSON.parse(localStorage.getItem('forum-posts')) || [];
+        let sessions = JSON.parse(localStorage.getItem('qa-sessions')) || [];
+        let events = JSON.parse(localStorage.getItem('calendar-events')) || [];
+        let currentDate = new Date(2025, 9, 18); // October 18, 2025
+        let liveChatMessages = []; // Pour chat live sans caméra
+        
+        // Forum (inchangé)
+        function openForum() {
+            document.getElementById('forum-section').classList.add('active');
+            renderPosts();
+        }
+        
+        function closeForum() {
+            document.getElementById('forum-section').classList.remove('active');
+        }
+        
+        function addPost(e) {
+            e.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const post = {
+                id: Date.now(),
+                title,
+                content,
+                date: new Date().toLocaleDateString('fr-FR'),
+                pinned: false,
+                replies: []
+            };
+            posts.unshift(post);
+            localStorage.setItem('forum-posts', JSON.stringify(posts));
+            renderPosts();
+            e.target.reset();
+        }
+        
+        function renderPosts() {
+            const list = document.getElementById('posts-list');
+            list.innerHTML = posts.map(post => `
+                <li class="forum-post ${post.pinned ? 'pinned' : ''}">
+                    <div class="post-header">
+                        <h4>${post.title} <span class="badge">${post.date}</span></h4>
+                        <div class="post-actions">
+                            <button onclick="togglePin(${post.id})" class="pin-btn ${post.pinned ? 'pinned' : ''}"><i class="fas fa-thumbtack"></i></button>
+                            <button onclick="deletePost(${post.id})" class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <p>${post.content}</p>
+                    <div class="replies">
+                        <h5><i class="fas fa-reply"></i> Réponses :</h5>
+                        ${post.replies.map(reply => `<div class="chat-message"><strong>${reply.author}:</strong> ${reply.text}</div>`).join('')}
+                        <form class="reply-form" onsubmit="addReply(event, ${post.id})">
+                            <input type="text" placeholder="Votre réponse..." required>
+                            <input type="text" placeholder="Votre nom" required style="width: 150px;">
+                            <button type="submit" class="reply-btn"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </li>
+            `).join('');
+        }
+        
+        function togglePin(id) {
+            const post = posts.find(p => p.id === id);
+            post.pinned = !post.pinned;
+            localStorage.setItem('forum-posts', JSON.stringify(posts));
+            renderPosts();
+        }
+        
+        function deletePost(id) {
+            if (confirm('Supprimer ce post ?')) {
+                posts = posts.filter(p => p.id !== id);
+                localStorage.setItem('forum-posts', JSON.stringify(posts));
+                renderPosts();
+            }
+        }
+        
+        function addReply(e, postId) {
+            e.preventDefault();
+            const textInput = e.target.querySelector('input[type="text"]:first-of-type');
+            const authorInput = e.target.querySelector('input[type="text"]:last-of-type');
+            const text = textInput.value;
+            const author = authorInput.value;
+            const post = posts.find(p => p.id === postId);
+            post.replies.push({ text, author });
+            localStorage.setItem('forum-posts', JSON.stringify(posts));
+            e.target.reset();
+            renderPosts();
+        }
+        
+        // Q&A
+        function openQA() {
+            document.getElementById('qa-section').classList.add('active');
+            renderSessions();
+        }
+        
+        function closeQA() {
+            document.getElementById('qa-section').classList.remove('active');
+            if (document.getElementById('live-session')) {
+                document.getElementById('live-session').remove();
+            }
+        }
+        
+        function createSession(e) {
+            e.preventDefault();
+            const title = document.getElementById('session-title').value;
+            const date = document.getElementById('session-date').value;
+            const time = document.getElementById('session-time').value;
+            const desc = document.getElementById('session-desc').value;
+            const session = {
+                id: Date.now(),
+                title,
+                date,
+                time,
+                desc
+            };
+            sessions.unshift(session);
+            localStorage.setItem('qa-sessions', JSON.stringify(sessions));
+            renderSessions();
+            e.target.reset();
+            alert('Session planifiée ! Emails envoyés aux étudiants inscrits. (Simulé - Implémentez backend pour envoi réel)');
+        }
+        
+        function renderSessions() {
+            const list = document.getElementById('sessions-list');
+            list.innerHTML = sessions.map(session => `
+                <li class="qa-session">
+                    <h4><i class="fas fa-microphone-alt"></i> ${session.title}</h4>
+                    <p class="session-date"><i class="fas fa-clock"></i> ${session.date} à ${session.time}</p>
+                    <p>${session.desc}</p>
+                    <button class="btn" onclick="startLive(${session.id})" style="margin-top: 0.5rem; padding: 0.5rem 1rem;"><i class="fas fa-play"></i> Ouvrir le Direct (Sans Caméra)</button>
+                </li>
+            `).join('');
+        }
+        
+        function startLive(sessionId) {
+            const session = sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            // Supprimer session live précédente si existante
+            const existingLive = document.getElementById('live-session');
+            if (existingLive) existingLive.remove();
+            
+            // Créer section live sans caméra (chat + audio simulé)
+            const liveDiv = document.createElement('div');
+            liveDiv.id = 'live-session';
+            liveDiv.className = 'live-session';
+            liveDiv.innerHTML = `
+                <h3><i class="fas fa-broadcast-tower"></i> Session Live Active: ${session.title}</h3>
+                <p><i class="fas fa-info-circle"></i> Mode: Audio/Chat uniquement (Pas d'accès caméra pour confidentialité)</p>
+                <div class="live-chat" id="live-chat">
+                    <div class="chat-message"><strong>Système:</strong> Session ouverte ! Posez vos questions.</div>
+                </div>
+                <form class="chat-form" onsubmit="sendMessage(event)">
+                    <input type="text" id="chat-input" placeholder="Posez votre question..." required>
+                    <button type="submit" class="chat-send"><i class="fas fa-paper-plane"></i></button>
+                </form>
+                <button class="btn" onclick="endLive()" style="margin-top: 1rem; background: #dc3545;">Fermer la Session</button>
+            `;
+            document.getElementById('qa-section').appendChild(liveDiv);
+            
+            // Focus sur chat
+            document.getElementById('chat-input').focus();
+        }
+        
+        function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value;
+            if (!message) return;
+            
+            liveChatMessages.push({ text: message, author: 'Étudiant', isTeacher: false });
+            renderLiveChat();
+            input.value = '';
+            
+            // Simuler réponse enseignant (en prod, websocket ou polling)
+            setTimeout(() => {
+                liveChatMessages.push({ text: 'Réponse de l\'enseignant: Merci pour votre question ! Voici une explication détaillée...', author: 'Enseignant', isTeacher: true });
+                renderLiveChat();
+            }, 2000);
+        }
+        
+        function renderLiveChat() {
+            const chat = document.getElementById('live-chat');
+            chat.innerHTML = liveChatMessages.map(msg => `
+                <div class="chat-message ${msg.isTeacher ? 'teacher-msg' : ''}">
+                    <strong>${msg.author}:</strong> ${msg.text}
+                </div>
+            `).join('');
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        function endLive() {
+            if (confirm('Fermer la session live ?')) {
+                document.getElementById('live-session').remove();
+                liveChatMessages = [];
+            }
+        }
+        
+        // Calendrier (inchangé, avec petites anims ajoutées)
+        function openCalendar() {
+            document.getElementById('calendar-section').classList.add('active');
+            renderCalendar();
+        }
+        
+        function closeCalendar() {
+            document.getElementById('calendar-section').classList.remove('active');
+        }
+        
+        function addEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('event-title').value;
+            const date = document.getElementById('event-date').value;
+            const desc = document.getElementById('event-desc').value;
+            events.push({ title, date, desc });
+            localStorage.setItem('calendar-events', JSON.stringify(events));
+            renderCalendar();
+            e.target.reset();
+        }
+        
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        
+        function renderCalendar() {
+            const monthYear = document.getElementById('month-year');
+            monthYear.innerHTML = `<i class="fas fa-calendar"></i> ${new Date(currentYear, currentMonth).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`;
+            
+            const grid = document.getElementById('calendar-grid');
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // En-têtes jours
+            let gridHTML = '<div style="font-weight:bold; color:var(--primary-blue);">Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div style="color:#f44336;">Sam</div><div style="color:#f44336;">Dim</div>';
+            
+            // Jours précédents
+            for (let i = firstDay - 1; i >= 1; i--) {
+                gridHTML += `<div class="calendar-day other-month">${prevMonthDays - i + 1}</div>`;
+            }
+            
+            // Jours du mois
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayStr = String(day).padStart(2, '0');
+                const monthStr = String(currentMonth + 1).padStart(2, '0');
+                const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
+                const dayEvents = events.filter(e => e.date === dateStr);
+                gridHTML += `<div class="calendar-day" onclick="showEventDetails('${dateStr}')">${day}`;
+                dayEvents.forEach(event => {
+                    gridHTML += `<div class="calendar-event" title="${event.desc}">${event.title}</div>`;
+                });
+                gridHTML += '</div>';
+            }
+            
+            // Jours suivants
+            const remaining = 42 - (7 + (firstDay - 1) + daysInMonth); // 6 semaines total
+            for (let i = 1; i <= remaining; i++) {
+                gridHTML += `<div class="calendar-day other-month">${i}</div>`;
+            }
+            
+            grid.innerHTML = gridHTML;
+        }
+        
+        function showEventDetails(date) {
+            const dayEvents = events.filter(e => e.date === date);
+            if (dayEvents.length > 0) {
+                alert(`Événements le ${date}:\n${dayEvents.map(e => `- ${e.title}: ${e.desc}`).join('\n')}`);
+            }
+        }
+        
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+        
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+    </script>
+</body>
+</html>

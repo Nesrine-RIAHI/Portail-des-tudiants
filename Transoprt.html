@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSM - Transports</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.2/dist/leaflet-search.min.css" />
+    <style>
+        /* ============ VARIABLES ============ */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a252f;
+            --accent: #3498db;
+            --light: #f5f5f5;
+            --medium: #e0e0e0;
+            --dark: #333;
+            --white: #fff;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        /* ============ BASE STYLES ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-image: url('Background_transport.jpeg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        
+        /* ============ NAVBAR (identique aux autres pages) ============ */
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #4a78a6;
+            padding: 20px;
+            font-size: 18px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.5s ease;
+        }
+        .navbar a {
+            color: #fffbfc;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+        }
+        .navbar a:hover {
+            background-color: #bbcefb;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* ============ HEADER ============ */
+        header {
+            background: linear-gradient(rgba(10, 36, 99, 0.8), rgba(10, 36, 99, 0.8));
+            color: var(--white);
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* ============ SECTIONS GÉNÉRALES ============ */
+        .section {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* ============ TABLES ============ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--medium);
+        }
+        
+        th {
+            background: var(--light);
+            font-weight: bold;
+        }
+        
+        .best {
+            background: #d4edda;
+            font-weight: bold;
+            color: #155724;
+        }
+        
+        /* ============ FAQ ============ */
+        .faq-container {
+            margin-top: 20px;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid var(--medium);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light);
+            transition: var(--transition);
+        }
+        
+        .faq-question:hover {
+            background: var(--medium);
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .faq-answer.active {
+            max-height: 200px;
+            padding: 15px;
+        }
+        
+        .error {
+            color: #dc3545;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* ============ MAP STYLES (restauré) ============ */
+        #campus-map {
+            height: 400px;
+            width: 100%;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .poi-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .poi-item {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        
+        .poi-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .poi-item h4 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .poi-item p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.9rem;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (identique aux autres pages) -->
+    <div class="navbar">
+        <a href="index.html">Connexion</a>
+        <a href="Actualite.html">Actualités</a>
+        <a href="NouveauxEtudiants.html">Nouveaux Étudiants</a>
+        <a href="EspaceInteractif.html">Espace Interactif</a>
+        <a href="GuidesSalles.html">Guide Salles</a>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <h1>Transports FSM - Guide Étudiants 2025</h1>
+        <p>Horaires, options et conseils pour aller de FSM à Sahel et environs</p>
+    </header>
+
+    <div class="container">
+        <!-- Section Horaires -->
+        <div class="section">
+            <h2><i class="fas fa-clock"></i> Horaires Metro Sahel (SNCFT)</h2>
+            <p>Trajet FSM/Monastir → Sahel (durée moyenne 20 min, 0.6 TND). Chargé automatiquement depuis SNCFT.</p>
+            <div id="horaires-container">
+                <p>Chargement des horaires...</p>
+            </div>
+        </div>
+
+        <!-- Section Comparatif -->
+        <div class="section">
+            <h2><i class="fas fa-balance-scale"></i> Comparatif Options Transports</h2>
+            <p>Options FSM → Sahel (~5km) : Durée, coût, impact CO2. Généré automatiquement.</p>
+            <table id="comparatif-table">
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Durée</th>
+                        <th>Coût</th>
+                        <th>CO2</th>
+                        <th>Idéal pour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="5">Chargement du comparatif...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section Map (restauré) -->
+        <div class="section">
+            <h2><i class="fas fa-map-marked-alt"></i> Carte Interactive Transports</h2>
+            <p>Visualisez gares, arrêts bus et itinéraires FSM → Sahel.</p>
+            <div id="campus-map"></div>
+            <div class="poi-list" id="poi-list">
+                <!-- POIs chargés dynamiquement ou statiques -->
+                <p>Chargement des POIs...</p>
+            </div>
+        </div>
+
+        <!-- Section FAQ -->
+        <div class="section">
+            <h2><i class="fas fa-question-circle"></i> FAQ Transports</h2>
+            <p>Questions fréquentes pour étudiants FSM (mises à jour 2025).</p>
+            <div id="faq-container" class="faq-container">
+                <p>Chargement des FAQ...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS (restauré) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-search@3.0.2/dist/leaflet-search.min.js"></script>
+    <script>
+        // Récup user de localStorage
+        function getUser() {
+            return JSON.parse(localStorage.getItem('user')) || null;
+        }
+
+        // Vérif login au load
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getUser();
+            if (!user) {
+                alert('Veuillez vous connecter pour accéder aux ressources.');
+                window.location.href = "index.html";
+            }
+
+            // Animation navbar (identique aux autres pages)
+            const navBar = document.querySelector('.navbar');
+            navBar.addEventListener('mouseenter', () => {
+                navBar.style.transform = 'translateY(0px)';
+            });
+            navBar.addEventListener('mouseleave', () => {
+                navBar.style.transform = 'translateY(-5px)';
+            });
+
+            // Chargement initial
+            loadHoraires();
+            loadComparatif();
+            loadFAQ();
+            initMap(); // Map restaurée
+        });
+
+        // Fetch horaires
+        async function loadHoraires() {
+            try {
+                const response = await fetch('http://localhost:3001/transport-schedules');
+                const data = await response.json();
+                const container = document.getElementById('horaires-container');
+                container.innerHTML = `
+                    <h3>Jours Ouvrables</h3>
+                    <table>
+                        <thead><tr><th>Départ Monastir</th><th>Arrivée Sahel</th><th>Durée</th><th>Coût</th></tr></thead>
+                        <tbody>${data.weekdays.map(s => `<tr><td>${s.departure}</td><td>${s.arrival}</td><td>${s.duration}</td><td>${s.cost}</td></tr>`).join('')}</tbody>
+                    </table>
+                    <h3>Weekends/Fériés</h3>
+                    <table>
+                        <thead><tr><th>Départ Monastir</th><th>Arrivée Sahel</th><th>Durée</th><th>Coût</th></tr></thead>
+                        <tbody>${data.weekends.map(s => `<tr><td>${s.departure}</td><td>${s.arrival}</td><td>${s.duration}</td><td>${s.cost}</td></tr>`).join('')}</tbody>
+                    </table>
+                    <p><em>Source : SNCFT 2025. Vérifiez app pour retards live.</em></p>
+                `;
+            } catch (error) {
+                document.getElementById('horaires-container').innerHTML = '<div class="error">Erreur de chargement des horaires. Consultez sncft.com.tn.</div>';
+            }
+        }
+
+        // Fetch comparatif
+        async function loadComparatif() {
+            try {
+                const response = await fetch('http://localhost:3001/transport-comparatif');
+                const options = await response.json();
+                const tbody = document.querySelector('#comparatif-table tbody');
+                tbody.innerHTML = options.map(opt => {
+                    const isBestDuree = options.every(o => o.duree >= opt.duree) ? 'best' : '';
+                    const isBestCout = options.every(o => o.cout >= opt.cout) ? 'best' : '';
+                    const isBestEco = options.every(o => o.co2 >= opt.co2) ? 'best' : '';
+                    return `
+                        <tr>
+                            <td>${opt.nom}</td>
+                            <td class="${isBestDuree}">${opt.duree}</td>
+                            <td class="${isBestCout}">${opt.cout}</td>
+                            <td class="${isBestEco}">${opt.co2}</td>
+                            <td>${opt.idealPour}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                document.querySelector('#comparatif-table tbody').innerHTML = '<tr><td colspan="5" class="error">Erreur de chargement du comparatif.</td></tr>';
+            }
+        }
+
+        // Fetch FAQ transports
+        async function loadFAQ() {
+            try {
+                const response = await fetch('http://localhost:3001/faqs?category=transports');
+                const faqs = await response.json();
+                const container = document.getElementById('faq-container');
+                container.innerHTML = faqs.map(faq => `
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <i class="fas fa-${faq.icon || 'question-circle'}"></i>
+                            <h3>${faq.question}</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>${faq.reponse}</p>
+                            ${faq.liste ? `<ul>${faq.liste.map(item => `<li>${item}</li>`).join('')}</ul>` : ''}
+                            ${faq.lien ? `<a href="${faq.lien}" target="_blank" class="btn">En savoir plus</a>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                initFAQ();
+            } catch (error) {
+                document.getElementById('faq-container').innerHTML = '<div class="error">Erreur de chargement des FAQ.</div>';
+            }
+        }
+
+        function initFAQ() {
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', () => {
+                    const item = question.parentElement;
+                    const answer = question.nextElementSibling;
+                    const icon = question.querySelector('.fa-chevron-down');
+                    
+                    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                    item.classList.toggle('active');
+                    answer.classList.toggle('active');
+                    icon.classList.toggle('rotate');
+                });
+            });
+        }
+
+        // Map Leaflet (restauré et intégrée)
+        function initMap() {
+            const map = L.map('campus-map').setView([35.771, 10.823], 16); // Coord FSM Monastir
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // POIs transports (gares, arrêts)
+            const pois = [
+                { name: 'Gare Monastir (Metro Sahel)', coords: [35.770, 10.824], description: 'Départ metro vers Sahel, 5 min à pied FSM' },
+                { name: 'Arrêt Bus SNCTI (Ligne 20)', coords: [35.7715, 10.8235], description: 'Bus local Monastir-Sahel, toutes les 30 min' },
+                { name: 'Station Vélo Partagé', coords: [35.772, 10.822], description: 'TunisBike pour trajets éco FSM-Sahel' }
+            ];
+
+            pois.forEach(poi => {
+                const marker = L.marker(poi.coords).addTo(map)
+                    .bindPopup(`<b>${poi.name}</b><br>${poi.description}`);
+            });
+
+            // Recherche sur map
+            map.addControl(new L.Control.Search({
+                position: 'topleft',
+                title: 'Rechercher POI',
+                layer: L.layerGroup(pois.map(p => L.marker(p.coords))),
+                marker: false,
+                textPlaceholder: 'Rechercher gare/arrêt...'
+            }));
+
+            // Liste POIs
+            const poiList = document.getElementById('poi-list');
+            poiList.innerHTML = pois.map(poi => `
+                <div class="poi-item" onclick="map.setView([${poi.coords[0]}, ${poi.coords[1]}], 18)">
+                    <h4>${poi.name}</h4>
+                    <p>${poi.description}</p>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

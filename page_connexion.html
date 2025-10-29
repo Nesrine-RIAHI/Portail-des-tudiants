@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Étudiant</title>
+    <style>
+        /* Styles généraux */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-image: url(background_Connexion.jpeg);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Barre de navigation */
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    background-color: #4a78a6;
+    padding: 20px;
+    font-size: 16px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+.navbar a {
+    color: #fffbfc;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.navbar a:hover {
+    background-color: #4a78a6;
+    transform: scale(1.1);
+    border-radius: 5px;
+}
+
+/* Conteneur d'inscription */
+.signup-container {
+    margin-top: 50px;
+}
+.signup-box {
+    background-color: #4a78a6;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    margin: auto;
+    animation: bounce 1s ease-in-out;
+}
+.signup-box input {
+    display: block;
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #4a78a6;
+    border-radius: 5px;
+}
+.signup-box input:focus {
+    border: 2px solid #1b2232;
+    outline: none;
+    animation: input-glow 0.5s alternate infinite;
+}
+.signup-box button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4a78a6;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.signup-box button:hover:not(:disabled) {
+    background-color: #1b2232;
+    transform: scale(1.1);
+}
+.signup-box select {
+    display: block;
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #4a78a6;
+    border-radius: 5px;
+    background-color: white;
+}
+.signup-box select:focus {
+    border: 2px solid #1b2232;
+    outline: none;
+    animation: input-glow 0.5s alternate infinite;
+}
+
+/* Animations */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes input-glow {
+    from {
+        box-shadow: 0px 0px 10px rgba(74, 120, 166, 0.5);
+    }
+    to {
+        box-shadow: 0px 0px 20px rgba(74, 120, 166, 1);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#">Actualité</a>
+        <a href="#">Nouveaux Étudiants</a>
+        <a href="#">Transports</a>
+        <a href="#">Espace Interactif</a>
+        <a href="#">Guide Salles</a>
+    </div>
+
+    <div class="signup-container">
+        <h1>S'INSCRIRE :</h1>
+        <div class="signup-box">
+            <form id="signupForm">
+                <input type="text" name="firstname" placeholder="Nom" required>
+                <input type="text" name="lastname" placeholder="Prénom" required>
+                <select name="role" id="role" required>
+                    <option value="">Sélectionnez votre rôle</option>
+                    <option value="etudiant">Étudiant</option>
+                    <option value="enseignant">Enseignant / Expert</option>
+                </select>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+                <input type="password" name="confirm-password" placeholder="Confirmer votre mot de passe" required>
+                <button type="submit" id="signupBtn" disabled>S'INSCRIRE</button>
+            </form>
+            <a href="index.html" class="register-link">Déjà un compte ? Se connecter</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animation navbar
+            const navBar = document.querySelector('.navbar');
+            navBar.addEventListener('mouseenter', () => {
+                navBar.style.transform = 'translateY(0px)';
+            });
+            navBar.addEventListener('mouseleave', () => {
+                navBar.style.transform = 'translateY(-5px)';
+            });
+
+            const form = document.getElementById('signupForm');
+            const btn = document.getElementById('signupBtn');
+
+            // Validation champs
+            function verifierChamps() {
+                const champs = document.querySelectorAll('input[required], select[required]');
+                const password = document.querySelector('input[name="password"]').value;
+                const confirmPassword = document.querySelector('input[name="confirm-password"]').value;
+                const role = document.getElementById('role').value;
+
+                const tousRemplis = Array.from(champs).every(el => el.value.trim() !== '');
+                const passwordsMatch = password === confirmPassword;
+                const roleSelected = role !== '';
+
+                btn.disabled = !(tousRemplis && passwordsMatch && roleSelected);
+                if (!passwordsMatch && confirmPassword) {
+                    alert("Les mots de passe ne correspondent pas !");
+                }
+            }
+
+            // Écouteurs sur inputs/select
+            document.querySelectorAll('input[required], select[required]').forEach(el => {
+                el.addEventListener('input', verifierChamps);
+            });
+
+            // Soumettre form signup
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                // Vérif finale passwords
+                const password = document.querySelector('input[name="password"]').value;
+                const confirmPassword = document.querySelector('input[name="confirm-password"]').value;
+                if (password !== confirmPassword) {
+                    alert("Les mots de passe ne correspondent pas !");
+                    return;
+                }
+
+                // Récup données
+                const formData = {
+                    firstname: document.querySelector('input[name="firstname"]').value.trim(),
+                    lastname: document.querySelector('input[name="lastname"]').value.trim(),
+                    email: document.querySelector('input[name="email"]').value.trim(),
+                    password,
+                    role: document.getElementById('role').value
+                };
+
+                // Animation bouton
+                btn.style.backgroundColor = '#33cc33';
+                btn.innerText = 'Inscription...';
+                btn.disabled = true;
+
+                try {
+                    const response = await fetch('http://localhost:3001/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert(data.message);
+                        window.location.href = "index.html"; // Retour au login
+                    } else {
+                        alert(data.error || 'Erreur inconnue');
+                        // Reset bouton
+                        btn.style.backgroundColor = '#4a78a6';
+                        btn.innerText = 'S\'INSCRIRE';
+                        btn.disabled = false;
+                    }
+                } catch (err) {
+                    alert('Erreur réseau : ' + err.message);
+                    // Reset bouton
+                    btn.style.backgroundColor = '#4a78a6';
+                    btn.innerText = 'S\'INSCRIRE';
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

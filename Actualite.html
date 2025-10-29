@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualités - FSM Portal</title>
+    <style>
+        body {
+            background-image: url(Background_Actualité.jpeg);
+            background-size: cover;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #4a78a6;
+            padding: 20px;
+            font-size: 18px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.5s ease;
+        }
+        .navbar a {
+            color: #fffbfc;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+        }
+        .navbar a:hover {
+            background-color: #bbcefb;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #003366;
+            color: white;
+        }
+        section {
+            padding: 20px;
+            margin: 10px auto;
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        section:hover {
+            transform: translateX(10px); 
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            border-bottom: 2px solid #66ccff;
+            padding-bottom: 5px;
+        }
+        .rubrique {
+            margin-bottom: 20px;
+        }
+        .news-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .news-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .news-card h3 {
+            color: #66ccff;
+            margin-bottom: 10px;
+        }
+        .news-card p {
+            color: white;
+            margin-bottom: 5px;
+        }
+        .news-card .type {
+            font-size: 12px;
+            color: #bbcefb;
+            text-transform: uppercase;
+        }
+        .cta-button {
+            background-color: #66ccff;
+            color: #003366;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .cta-button:hover {
+            background-color: #003366;
+            color: #fff;
+        }
+        .add-news-form {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 500px;
+            display: none;  /* Caché si pas enseignant */
+        }
+        .add-news-form input, .add-news-form select, .add-news-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #66ccff;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .add-news-form button {
+            background-color: #66ccff;
+            color: #003366;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #addNewsBtn {
+            background-color: #66ccff;
+            color: #003366;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Connexion</a>
+        <a href="NouveauxEtudiants.html">Nouveaux Étudiants</a>
+        <a href="Transoprt.html">Transports</a>
+        <a href="EspaceInteractif.html">Espace Interactif</a>
+        <a href="GuidesSalles.html">Guide Salles</a>
+    </div>
+    <header>
+        <h1>Actualités FSM - Portail Étudiant</h1>
+        <p>Bienvenue, <span id="userName">Étudiant</span> !</p>
+    </header>
+
+    <section id="success-stories">
+        <h2>Success Stories</h2>
+        <div class="rubrique">
+            <div id="stories-list" class="news-list">
+                <!-- Chargé dynamiquement -->
+                <p>Chargement des success stories...</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="research">
+        <h2>Recherche & Innovation</h2>
+        <div class="rubrique">
+            <div id="research-list" class="news-list">
+                <!-- Chargé dynamiquement -->
+                <p>Chargement des innovations...</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="events">
+        <h2>Événements</h2>
+        <div class="rubrique">
+            <div id="events-list" class="news-list">
+                <!-- Chargé dynamiquement -->
+                <p>Chargement des événements...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bouton et form pour enseignants -->
+    <button id="addNewsBtn" onclick="toggleForm()">Ajouter une Actualité (Enseignants)</button>
+    <form id="newsForm" class="add-news-form">
+        <input type="text" id="titre" placeholder="Titre" required>
+        <select id="type">
+            <option value="success">Success Story</option>
+            <option value="research">Recherche/Innovation</option>
+            <option value="evenement">Événement</option>
+        </select>
+        <textarea id="description" placeholder="Description" required></textarea>
+        <input type="url" id="lien" placeholder="Lien (optionnel)">
+        <button type="submit">Publier</button>
+    </form>
+
+    <script>
+        // Récup user de localStorage (après login)
+        function getUser() {
+            return JSON.parse(localStorage.getItem('user')) || null;
+        }
+
+        function getUserRole() {
+            const user = getUser();
+            return user ? user.role : null;
+        }
+
+        // Affichage nom user
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.firstname;
+            } else {
+                // Si pas connecté, redirige vers login
+                window.location.href = "index.html";
+            }
+
+            const role = getUserRole();
+            if (role === 'enseignant') {
+                document.getElementById('addNewsBtn').style.display = 'block';
+            }
+
+            loadNews();
+        });
+
+        // Fetch et population automatique
+        async function loadNews() {
+            try {
+                const response = await fetch('http://localhost:3001/news');
+                const data = await response.json();
+
+                // Success Stories
+                const stories = data.stories.slice(0, 3); // Limite à 3
+                document.getElementById('stories-list').innerHTML = stories.map(item => `
+                    <div class="news-card">
+                        <h3>${item.titre}</h3>
+                        <p class="type">Type: ${item.type}</p>
+                        <p>${item.description}</p>
+                        ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                    </div>
+                `).join('');
+
+                // Recherche & Innovation
+                const research = data.research.slice(0, 3);
+                document.getElementById('research-list').innerHTML = research.map(item => `
+                    <div class="news-card">
+                        <h3>${item.titre}</h3>
+                        <p class="type">Type: ${item.type}</p>
+                        <p>${item.description}</p>
+                        ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                    </div>
+                `).join('');
+
+                // Événements
+                const events = data.events.slice(0, 3);
+                document.getElementById('events-list').innerHTML = events.map(item => `
+                    <div class="news-card">
+                        <h3>${item.titre}</h3>
+                        <p class="type">Type: ${item.type}</p>
+                        <p>${item.description}</p>
+                        ${item.lien ? `<a href="${item.lien}" target="_blank" class="cta-button">Lien</a>` : ''}
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('Erreur fetch news:', err);
+                // Fallback statique
+                document.getElementById('stories-list').innerHTML = '<p>Données temporaires indisponibles. Vérifiez la connexion au backend.</p>';
+                document.getElementById('research-list').innerHTML = '<p>Données temporaires indisponibles.</p>';
+                document.getElementById('events-list').innerHTML = '<p>Données temporaires indisponibles.</p>';
+            }
+        }
+
+        // Toggle form ajout (pour enseignants)
+        function toggleForm() {
+            const form = document.getElementById('addNewsForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Submit form ajout (exemple statique ; étendre avec POST /news si besoin)
+        document.getElementById('newsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const role = getUserRole();
+            if (role !== 'enseignant') return alert('Accès refusé');
+
+            const data = {
+                titre: document.getElementById('titre').value,
+                type: document.getElementById('type').value,
+                description: document.getElementById('description').value,
+                lien: document.getElementById('lien').value
+            };
+
+            // Pour l'instant, alerte + refresh (ajoute POST backend plus tard)
+            alert('Actualité ajoutée ! (Simulation)');
+            loadNews();  // Refresh
+            toggleForm();
+            e.target.reset();
+        });
+    </script>
+</body>
+</html>
